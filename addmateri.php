@@ -33,6 +33,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"])&& !empty($_POST["tgl_posti
 			$pengajar_id=$_POST["pengajar_id"];
 			$kelas_id=$_POST["kelas_id"];
 
+
 	// $ext1 = pathinfo($_FILES['image1']['name'],PATHINFO_EXTENSION);
 	// $ext2 = pathinfo($_FILES['image2']['name'],PATHINFO_EXTENSION);
 	// $ext3 = pathinfo($_FILES['image3']['name'],PATHINFO_EXTENSION);

@@ -21,7 +21,8 @@ $conn = new mysqli("localhost", "root", "", "new_elearning");
 
 $data=json_decode(file_get_contents("php://input"));
 
-if(!empty($_POST["judul"])&& !empty($_POST["konten"])&& !empty($_POST["tgl_buat"])&& !empty($_POST["th_selesai"])&&
+if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"]) && !empty($_POST["tgl_buat"])&&
+    !empty($_POST["th_selesai"])&&
 		!empty($_POST["b_selesai"])&&!empty($_POST["t_selesai"])&&!empty($_POST["mapel_id"])&& !empty($_POST["pengajar_id"])&&
      !empty($_POST["kelas_id"]) ){
 
@@ -38,19 +39,13 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"])&& !empty($_POST["tgl_buat"
 			$pengajar_id=$_POST["pengajar_id"];
 			$kelas_id=$_POST["kelas_id"];
 
-	// $ext1 = pathinfo($_FILES['image1']['name'],PATHINFO_EXTENSION);
-	// $ext2 = pathinfo($_FILES['image2']['name'],PATHINFO_EXTENSION);
-	// $ext3 = pathinfo($_FILES['image3']['name'],PATHINFO_EXTENSION);
-	// $image1 = time().date("dmY").'1'.'.'.$ext1;
-	// $image2 = time().date("dmY").'2'.'.'.$ext2;
-	// $image3 = time().date("dmY").'3'.'.'.$ext3;
-  //
-	// move_uploaded_file($_FILES["image1"]["tmp_name"], "C:\\xampp\\htdocs\\agrowisata\\uploads\\".$image1);
-	// move_uploaded_file($_FILES["image2"]["tmp_name"], "C:\\xampp\\htdocs\\agrowisata\\uploads\\".$image2);
-	// move_uploaded_file($_FILES["image3"]["tmp_name"], "C:\\xampp\\htdocs\\agrowisata\\uploads\\".$image3);
+    $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
+    $file = $mapel_id.date("dmY").'.'.$ext;
 
-	$sqltugas="insert into tugas(judul, konten, tgl_buat, tgl_selesai, mapel_id, pengajar_id, kelas_id)
-		  values('$judul', '$konten', now(), '$tgl_selesai', '$mapel_id', '$pengajar_id', '$kelas_id')";
+    move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filetugas\\".$file);
+
+	$sqltugas="insert into tugas(judul, konten, tgl_buat, tgl_selesai, mapel_id, pengajar_id, kelas_id, file)
+		  values('$judul', '$konten', now(), '$tgl_selesai', '$mapel_id', '$pengajar_id', '$kelas_id', '$file')";
 
 
 	if(mysqli_query($conn,$sqltugas))

@@ -29,11 +29,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"])
 			$judul=$_POST["judul"];
 			$konten=$_POST["konten"];
 			$raw_tgl_buat = $_POST["tgl_buat"];
-			// $raw_tgl_selesai = $_POST["tgl_selesai"];
-			//$tgl_buat = date('Ym-d', strtotime($this->input->post['tgl_buat']));
 		 	$tgl_buat= strstr($raw_tgl_buat, " (", true);
-			// $tgl_selesai= strstr($raw_tgl_selesai, " (", true);
-			// $tgl_selesai=$_POST["tgl_selesai"];
       $tgl_selesai=$_POST["th_selesai"].'-'.$_POST["b_selesai"].'-'.$_POST["t_selesai"];
 			$mapel_id=$_POST["mapel_id"];
 			$pengajar_id=$_POST["pengajar_id"];
@@ -44,23 +40,31 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"])
 
     move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filetugas\\".$file);
 
+    if (date("Y-m-d") < $tgl_selesai) {
+
 	$sqltugas="insert into tugas(judul, konten, tgl_buat, tgl_selesai, mapel_id, pengajar_id, kelas_id, file)
 		  values('$judul', '$konten', now(), '$tgl_selesai', '$mapel_id', '$pengajar_id', '$kelas_id', '$file')";
 
 
-	if(mysqli_query($conn,$sqltugas))
-	{
-		echo "Files are uploaded, your recomendation will be shown if it validated";
-	}
-	else
-	{
-		echo "Uploading files error";
-	}
+    	if(mysqli_query($conn,$sqltugas))
+    	{
+    		echo "Files are uploaded, your recomendation will be shown if it validated";
+    	}
+    	else
+    	{
+    		echo "Uploading files error";
+    	}
+    }
+    else
+    {
+    echo "tanggal tidak sesuai";
+    }
 
 }
 else
 {
 echo "File is empty";
 }
+
 
 ?>

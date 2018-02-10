@@ -21,36 +21,38 @@ $conn = new mysqli("localhost", "root", "", "new_elearning");
 
 $data=json_decode(file_get_contents("php://input"));
 
-if(!empty($_POST["siswa_id"])&& !empty($_POST["tugas_id"])&& !empty($_POST["tgl_buat"])&&
-     !empty($_POST["tgl_se"])&& !empty($_POST["konten"])){
+if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tgl_buat"]) && !empty($_POST["tgl_se"])
+    && !empty($_FILES["file"]) && !empty($_POST["konten"])){
 
 			$siswa_id=$_POST["siswa_id"];
-			$tugas_id=$_POST["tugas_id"];
-			$tgl_buat = $_POST["tgl_buat"];
-			$tgl_selesai = $_POST["tgl_se"];
-			$konten = $_POST["konten"];
+      $tugas_id=$_POST["tugas_id"];
+			$raw_tgl_buat = $_POST["tgl_buat"];
+		 	$tgl_buat= strstr($raw_tgl_buat, " (", true);
+      $tgl_se=$_POST["tgl_se"];
+			$konten=$_POST["konten"];
 
-      if ($tgl_buat <= $tgl_selesai) {
+    $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
+    $file = $siswa_id.date("dmY").'.'.$ext;
 
-	      $sqljawab="insert into tugas_jawaban(siswa_id, tugas_id, tgl_buat, konten)
-  		  values('$siswa_id', '$tugas_id', now(), '$konten')";
+    move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filejawaban\\".$file);
 
-        if(mysqli_query($conn,$sqljawab))
-      	{
-      		echo "tambah jawaban sukses";
-      	}
-      	else
-      	{
-      		echo "Uploading files error";
-      	}
+	$sqljawab="insert into tugas_jawaban(siswa_id, tugas_id, tgl_buat , file , konten)
+		  values('$siswa_id', '$tugas_id', now() , '$file' , '$konten')";
 
-    } else {
-            echo "Waktu menjawab sudah habis!!!!";
-          }
-        }
-        else
-        {
-        echo "File is empty";
-        }
-      // }
+
+	if(mysqli_query($conn,$sqljawab))
+	{
+		echo "Files are uploaded, your recomendation will be shown if it validated";
+	}
+	else
+	{
+		echo "Uploading files error";
+	}
+
+}
+else
+{
+echo "File is empty";
+}
+
 ?>

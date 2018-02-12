@@ -36,6 +36,8 @@ if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tg
 
     move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filejawaban\\".$file);
 
+  if (date("d M Y") < $tgl_se) {
+
 	$sqljawab="insert into tugas_jawaban(siswa_id, tugas_id, tgl_buat , file , konten)
 		  values('$siswa_id', '$tugas_id', now() , '$file' , '$konten')";
 
@@ -48,6 +50,12 @@ if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tg
 	{
 		echo "Uploading files error";
 	}
+
+  }
+  else
+  {
+  echo "waktu habis";
+  }
 
 }
 else

@@ -23,7 +23,7 @@ header("Content-Type: application/json; charset=UTF-8");
         $conn = new mysqli("localhost", "root", "", "new_elearning");
 
         $query = mysqli_query($conn, "select `judul`, `konten`, `file`, `nama_mapel`, `nama`, `nama_kelas`,
-	                                            DATE_FORMAT(`tgl_selesai`, '%d %m %Y') AS `tgl_seledit`,
+	                                            DATE_FORMAT(`tgl_selesai`, '%d %m %Y') AS `th_selesai`,
                                               DATE_FORMAT(`tgl_buat`, '%d %m %Y') AS `tgl_buedit` FROM `tugas`
 	                                             JOIN `mapel` ON `tugas`.`mapel_id` = `mapel`.`mapel_id`
 	                                              JOIN `pengajar` ON `tugas`.`pengajar_id` = `pengajar`.`pengajar_id`

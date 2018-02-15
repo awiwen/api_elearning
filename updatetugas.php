@@ -1,38 +1,91 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-header("Content-Type: application/json; charset=UTF-8");
+ if (isset($_SERVER['HTTP_ORIGIN'])) {
+        header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Max-Age: 86400');    // cache for 1 day
+    }
 
+    // Access-Control headers are received during OPTIONS requests
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
-if(isset($_GET["tugas_id"])&& isset($_GET["judul"])&& isset($_GET["konten"])&& isset($_GET["tgl_bu"])&& isset($_GET["tgl_se"])&& isset($_GET["mapel_id"])&& isset($_GET["pengajar_id"])&& isset($_GET["kelas_id"]) ){
-	if(!empty($_GET["tugas_id"])&& !empty($_GET["judul"])&& !empty($_GET["konten"])&& !empty($_GET["tgl_bu"])&& !empty($_GET["tgl_se"])&& !empty($_GET["mapel_id"])&& !empty($_GET["pengajar_id"])&& !empty($_GET["kelas_id"]) ){
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
-		$conn = new mysqli("localhost", "root", "", "new_elearning");
-		
-		$tugas_id=$_GET["tugas_id"];
-		$judul=$_GET["judul"];
-		$konten=$_GET["konten"];
-		$tgl_buat=$_GET["tgl_bu"];
-		$tgl_selesai=$_GET["tgl_se"];
-		$mapel_id=$_GET["mapel_id"];
-		$pengajar_id=$_GET["pengajar_id"];
-		$kelas_id=$_GET["kelas_id"];
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+            header("Access-Control-Allow-Headers:        {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
 
-		$sql="update tugas
-		set judul = '".$judul."',
-			konten = '".$konten."',
-			tgl_buat = '".$tgl_buat."',
-			tgl_selesai = '".$tgl_selesai."',
-			mapel_id = '".$mapel_id."',
-			pengajar_id = '".$pengajar_id."',
-			kelas_id = '".$kelas_id."'
-			where tugas_id = '".$tugas_id."'
-			";
-		if($conn->query($sql) === TRUE) {
-			echo true;
-		}
-	}
+        exit(0);
+    }
+
+$conn = new mysqli("localhost", "root", "", "new_elearning");
+
+$data=json_decode(file_get_contents("php://input"));
+
+if(!empty($_POST["tugas_id"])&& !empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"]) && !empty($_POST["tgl_buat"])&&
+    !empty($_POST["th_selesai"])&&
+		!empty($_POST["b_selesai"])&&!empty($_POST["t_selesai"])&&!empty($_POST["mapel_id"])&& !empty($_POST["pengajar_id"])&&
+     !empty($_POST["kelas_id"]) ){
+
+			$tugas_id=$_POST["tugas_id"];
+			$judul=$_POST["judul"];
+			$konten=$_POST["konten"];
+			$raw_tgl_buat = $_POST["tgl_buat"];
+		 	$tgl_buat= strstr($raw_tgl_buat, " (", true);
+      $tgl_selesai=$_POST["th_selesai"].'-'.$_POST["b_selesai"].'-'.$_POST["t_selesai"];
+			$mapel_id=$_POST["mapel_id"];
+			$pengajar_id=$_POST["pengajar_id"];
+			$kelas_id=$_POST["kelas_id"];
+
+    $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
+    $file = $mapel_id.date("dmY").'.'.$ext;
+
+    move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filetugas\\".$file);
+
+    if (date("Y-m-d") < $tgl_selesai) {
+
+			$sqltugas="update tugas
+			set
+				judul = '".$judul."',
+				konten = '".$konten."',
+				tgl_buat = '".$tgl_buat."',
+				tgl_selesai = '".$tgl_selesai."',
+				mapel_id = '".$mapel_id."',
+				pengajar_id = '".$pengajar_id."',
+				kelas_id = '".$kelas_id."',
+				file = '".$file."'
+				where tugas_id = '".$tugas_id."'
+				";
+			if($conn->query($sqltugas) === TRUE) {
+				echo true;
+			}
+	// 	}
+	// }
+
+// 	$sqltugas="update tugas set(judul, konten, tgl_buat, tgl_selesai, mapel_id, pengajar_id, kelas_id, file)
+// 		  values('$judul', '$konten', now(), '$tgl_selesai', '$mapel_id', '$pengajar_id', '$kelas_id', '$file')";
+//
+//
+//     	if(mysqli_query($conn,$sqltugas))
+//     	{
+//     		echo "Files are uploaded, your recomendation will be shown if it validated";
+//     	}
+    	else
+    	{
+    		echo "Uploading files error";
+    	}
+    }
+    else
+    {
+    echo "tanggal tidak sesuai";
+    }
+
 }
+else
+{
+echo "File is empty";
+}
+
+
 
 
 ?>

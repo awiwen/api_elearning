@@ -25,8 +25,8 @@ header("Content-Type: application/json; charset=UTF-8");
         $pengajar_id=$_GET["pengajar_id"];
 
         $query = mysqli_query($conn, "SELECT * ,
-                                      DATE_FORMAT(`tgl_selesai`, '%d %M %Y') AS `tgl_se`,
-                                      DATE_FORMAT(`tgl_buat`, '%d %M %Y') AS `tgl_bu`
+                                      DATE_FORMAT(`tgl_selesai`, '%d %m %Y') AS `tgl_se`,
+                                      DATE_FORMAT(`tgl_buat`, '%d %m %Y') AS `tgl_bu`
                                       FROM `tugas`
                                       LEFT JOIN `mapel` ON `tugas`.`mapel_id` = `mapel`.`mapel_id`
                                       LEFT  JOIN `pengajar` ON `tugas`.`pengajar_id` = `pengajar`.`pengajar_id`

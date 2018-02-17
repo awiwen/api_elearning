@@ -45,8 +45,8 @@ if(!empty($_POST["tugas_id"])&& !empty($_POST["judul"])&& !empty($_POST["konten"
       $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
       $file = $mapel_id.date("dmY").'.'.$ext;
 
-      if ($_FILES["file"]["size"] > (1*1048576)){
-        echo "file terlalu besar";
+      if ($_FILES["file"]["size"] < (40000)){
+        echo "file terlalu besar maksimal 4Mb";
         $uploadSize = 1;
       }
       else {
@@ -69,7 +69,7 @@ if(!empty($_POST["tugas_id"])&& !empty($_POST["judul"])&& !empty($_POST["konten"
 				where tugas_id = '".$tugas_id."'
 				";
 			if($conn->query($sqltugas) === TRUE) {
-				echo "Edit sukses";
+				echo "Edit berhasil";
 			}
     }
     else

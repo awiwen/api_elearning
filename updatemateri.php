@@ -39,13 +39,16 @@ if(!empty($_POST["materi_id"])&& !empty($_POST["judul"])&& !empty($_POST["konten
       $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
       $file = $mapel_id.date("dmY").'.'.$ext;
 
-      if ($_FILES["file"]["size"] > (1*1048576)){
-        echo "file terlalu besar";
+      if ($_FILES["file"]["size"] < (40000)){
+        echo "file terlalu besar maksimal 4Mb";
         $uploadSize = 1;
       }
       else {
         move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filemateri\\".$file);
+
       }
+
+
     }
 
     if ($uploadSize<1) {
@@ -61,15 +64,32 @@ if(!empty($_POST["materi_id"])&& !empty($_POST["judul"])&& !empty($_POST["konten
 				where materi_id = '".$materi_id."'
 				";
 			if($conn->query($sqlmateri) === TRUE) {
-				echo "Edit sukses";
+				echo "Edit berhasil";
 			}
 		}
+	// }
+
+
+// 	$sqlmateri="update materi set(judul, konten, tgl_posting, tgl_selesai, mapel_id, pengajar_id, kelas_id, file)
+// 		  values('$judul', '$konten', now(), '$tgl_selesai', '$mapel_id', '$pengajar_id', '$kelas_id', '$file')";
+//
+//
+//     	if(mysqli_query($conn,$sqlmateri))
+//     	{
+//     		echo "Files are uploaded, your recomendation will be shown if it validated";
+    	// }
+    // }
+    // else
+    // {
+    // echo "tanggal tidak sesuai";
+    // }
 
 }
 else
 {
 echo "File is empty";
 }
+// }
 
 
 

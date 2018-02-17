@@ -19,9 +19,9 @@
 
 $conn = new mysqli("localhost", "root", "", "new_elearning");
 
-$data=json_decode(file_get_contents("php://input"));
+// $data=json_decode(file_get_contents("php://input"));
 
-if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"]) && !empty($_POST["tgl_buat"])&&
+if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat"])&&
     !empty($_POST["th_selesai"])&&
 		!empty($_POST["b_selesai"])&&!empty($_POST["t_selesai"])&&!empty($_POST["mapel_id"])&& !empty($_POST["pengajar_id"])&&
      !empty($_POST["kelas_id"]) ){
@@ -34,11 +34,25 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"])
 			$mapel_id=$_POST["mapel_id"];
 			$pengajar_id=$_POST["pengajar_id"];
 			$kelas_id=$_POST["kelas_id"];
+      $file= '';
+      $uploadSize = 0;
 
-    $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
-    $file = $mapel_id.date("dmY").'.'.$ext;
+      if (!empty($_FILES['file'])) {
+        $data=json_decode(file_get_contents("php://input"));
 
-    move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filetugas\\".$file);
+        $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
+        $file = $mapel_id.date("dmY").'.'.$ext;
+
+        if ($_FILES["file"]["size"] < (40000)){
+          echo "file terlalu besar maksimal 4Mb";
+          $uploadSize = 1;
+        }
+        else {
+          move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filetugas\\".$file);
+        }
+      }
+
+      if ($uploadSize<1) {
 
     if (date("Y-m-d") < $tgl_selesai) {
 
@@ -48,8 +62,9 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"])
 
     	if(mysqli_query($conn,$sqltugas))
     	{
-    		echo "Files are uploaded, your recomendation will be shown if it validated";
+    		echo "Tambah tugas berhasil";
     	}
+
     	else
     	{
     		echo "Uploading files error";
@@ -59,7 +74,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_FILES["file"])
     {
     echo "tanggal tidak sesuai";
     }
-
+}
 }
 else
 {

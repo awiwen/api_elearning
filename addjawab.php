@@ -19,10 +19,10 @@
 
 $conn = new mysqli("localhost", "root", "", "new_elearning");
 
-$data=json_decode(file_get_contents("php://input"));
+// $data=json_decode(file_get_contents("php://input"));
 
 if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tgl_buat"]) && !empty($_POST["tgl_se"])
-    && !empty($_FILES["file"]) && !empty($_POST["konten"])){
+     && !empty($_POST["konten"])){
 
 			$siswa_id=$_POST["siswa_id"];
       $tugas_id=$_POST["tugas_id"];
@@ -30,11 +30,25 @@ if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tg
 		 	$tgl_buat= strstr($raw_tgl_buat, " (", true);
       $tgl_se=$_POST["tgl_se"];
 			$konten=$_POST["konten"];
+      $file= '';
+      $uploadSize = 0;
 
-    $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
-    $file = $siswa_id.date("dmY").'.'.$ext;
+      if (!empty($_FILES['file'])) {
+        $data=json_decode(file_get_contents("php://input"));
 
-    move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filejawaban\\".$file);
+        $ext = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
+        $file = $tugas_id.date("dmY").'.'.$ext;
+
+        if ($_FILES["file"]["size"] < (40000)){
+          echo "file terlalu besar maksimal 4Mb";
+          $uploadSize = 1;
+        }
+        else {
+          move_uploaded_file($_FILES["file"]["tmp_name"], "C:\\xampp\\htdocs\\elearning-smip\\assets\\filejawaban\\".$file);
+        }
+      }
+
+      if ($uploadSize<1) {
 
   if (date("d M Y") < $tgl_se) {
 
@@ -44,7 +58,7 @@ if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tg
 
 	if(mysqli_query($conn,$sqljawab))
 	{
-		echo "Files are uploaded, your recomendation will be shown if it validated";
+		echo "tambah jawaban berhasil";
 	}
 	else
 	{
@@ -56,6 +70,7 @@ if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tg
   {
   echo "waktu habis";
   }
+}
 
 }
 else

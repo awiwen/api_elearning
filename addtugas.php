@@ -44,7 +44,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
         $file = $mapel_id.date("dmY").'.'.$ext;
 
         if ($_FILES["file"]["size"] < (40000)){
-          echo "file terlalu besar maksimal 4Mb";
+          echo "file terlalu besar maksimal 4M";
           $uploadSize = 1;
         }
         else {
@@ -59,10 +59,50 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
 	$sqltugas="insert into tugas(judul, konten, tgl_buat, tgl_selesai, mapel_id, pengajar_id, kelas_id, file)
 		  values('$judul', '$konten', now(), '$tgl_selesai', '$mapel_id', '$pengajar_id', '$kelas_id', '$file')";
 
+  // $kelas_id=$_GET["kelas_id"];
 
-    	if(mysqli_query($conn,$sqltugas))
+  $query = mysqli_query($conn, "SELECT * from siswa
+                                LEFT JOIN `login` ON `siswa`.`siswa_id` = `login`.`siswa_id`
+                                where `siswa`.kelas_id = '".$kelas_id."'
+                                ");
+
+		}
+
+
+    	if($queryTugas = mysqli_query($conn,$sqltugas))
     	{
-    		echo "Tambah tugas berhasil";
+        $tugas_id = mysqli_insert_id($conn);
+        $myarr = array();
+
+
+        while($data = mysqli_fetch_assoc($query)){
+
+          // print_r($data);
+            // $my1arr[] = $data;
+            $judul=$_POST["judul"];
+      			$konten=$_POST["konten"];
+      			$raw_tgl_buat = $_POST["tgl_buat"];
+      		 	$tgl_buat= strstr($raw_tgl_buat, " (", true);
+            $tgl_selesai=$_POST["th_selesai"].'-'.$_POST["b_selesai"].'-'.$_POST["t_selesai"];
+      			$mapel_id=$_POST["mapel_id"];
+      			$pengajar_id=$_POST["pengajar_id"];
+      			$kelas_id=$_POST["kelas_id"];
+            $file= '';
+            $uploadSize = 0;
+
+            $login_id = $data["login_id"];;
+
+            $sqlnotif=" insert into notifikasi(pesan, tgl, oleh, login_id, status_id, tugas_id, link)
+          		                         values('tugas', '$tgl_selesai', '$judul', '$login_id', '1', '$tugas_id', 'http://localhost/elearning-smip/index.php/cdetailtugas/showdetailtugas/$tugas_id') ";
+
+            $notif = mysqli_query($conn,$sqlnotif);
+
+
+        }
+
+
+
+    		echo "Tambah tugas sukses";
     	}
 
     	else
@@ -75,7 +115,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
     echo "tanggal tidak sesuai";
     }
 }
-}
+
 else
 {
 echo "File is empty";

@@ -55,9 +55,44 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_post
 	$sqlmateri="insert into materi(judul, konten, file, tgl_posting, mapel_id, pengajar_id, kelas_id)
 		  values('$judul', '$konten', '$file', now(), '$mapel_id', '$pengajar_id', '$kelas_id')";
 
+  $query = mysqli_query($conn, "SELECT * from siswa
+                                LEFT JOIN `login` ON `siswa`.`siswa_id` = `login`.`siswa_id`
+                                where `siswa`.kelas_id = '".$kelas_id."'
+                                ");
+    }
 
-	if(mysqli_query($conn,$sqlmateri))
-	{
+      if($querymateri = mysqli_query($conn,$sqlmateri))
+      {
+        $materi_id = mysqli_insert_id($conn);
+        $myarr = array();
+
+        while($data = mysqli_fetch_assoc($query)){
+
+          // print_r($data);
+            // $my1arr[] = $data;
+            $judul=$_POST["judul"];
+            $konten=$_POST["konten"];
+            // $raw_tgl_buat = $_POST["tgl_buat"];
+            // $tgl_buat= strstr($raw_tgl_buat, " (", true);
+            // $tgl_selesai=$_POST["th_selesai"].'-'.$_POST["b_selesai"].'-'.$_POST["t_selesai"];
+            $mapel_id=$_POST["mapel_id"];
+            $pengajar_id=$_POST["pengajar_id"];
+            $kelas_id=$_POST["kelas_id"];
+            $file= '';
+            $uploadSize = 0;
+
+            $login_id = $data["login_id"];;
+
+            $sqlnotif=" insert into notifikasi(pesan, tgl, oleh, login_id, status_id, materi_id, link)
+                                       values('materi', now(), '$judul', '$login_id', '1', '$materi_id', 'http://localhost/elearning-smip/index.php/cdetailmateri/showdetailmateri/$materi_id') ";
+
+            $notif = mysqli_query($conn,$sqlnotif);
+
+
+        }
+
+	// if(mysqli_query($conn,$sqlmateri))
+	// {
 		echo "Tambah materi berhasil";
 	}
 	else
@@ -65,7 +100,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_post
 		echo "Uploading files error";
 	}
 }
-}
+// }
 else
 {
 echo "File is empty";

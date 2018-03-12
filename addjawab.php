@@ -50,26 +50,61 @@ if(!empty($_POST["siswa_id"]) && !empty($_POST["tugas_id"]) && !empty($_POST["tg
 
       if ($uploadSize<1) {
 
-  if (date("d M Y") < $tgl_se) {
+  if ( strtotime(date("d M Y")) < strtotime($tgl_se)) {
 
 	$sqljawab="insert into tugas_jawaban(siswa_id, tugas_id, tgl_buat , file , konten)
 		  values('$siswa_id', '$tugas_id', now() , '$file' , '$konten')";
 
+  $query = mysqli_query($conn, "SELECT * from tugas
+                                LEFT JOIN `pengajar` ON `tugas`.`pengajar_id` = `pengajar`.`pengajar_id`
+                                LEFT JOIN `login` ON `pengajar`.`pengajar_id` = `login`.`pengajar_id`
+                                where `tugas`.tugas_id = '".$tugas_id."'
+                                ");
 
-	if(mysqli_query($conn,$sqljawab))
-	{
-		echo "tambah jawaban berhasil";
-	}
-	else
-	{
-		echo "Uploading files error";
-	}
+
+                                if($queryJawab = mysqli_query($conn,$sqljawab))
+                                {
+                                  $tugas_jawaban_id = mysqli_insert_id($conn);
+                                  $myarr = array();
+
+
+                                  while($data = mysqli_fetch_assoc($query)){
+
+                                    // print_r($data);
+                                      // $my1arr[] = $data;
+                                      $siswa_id=$_POST["siswa_id"];
+                                      $tugas_id=$_POST["tugas_id"];
+                                			$raw_tgl_buat = $_POST["tgl_buat"];
+                                		 	$tgl_buat= strstr($raw_tgl_buat, " (", true);
+                                      $tgl_se=$_POST["tgl_se"];
+                                			$konten=$_POST["konten"];
+                                      $file= '';
+                                      $uploadSize = 0;
+
+                                      $login_id = $data["login_id"];;
+
+                                      $sqlnotif=" insert into notifikasi(pesan, tgl, oleh, login_id, status_id, tugas_jawaban_id, link)
+                                                                 values('Jawaban', now(), '$siswa_id', '$login_id', '1', '$tugas_jawaban_id', 'http://localhost/elearning-smip/index.php/cdetailjawab_s/showdetailjawab/$tugas_jawaban_id') ";
+
+                                      $notif = mysqli_query($conn,$sqlnotif);
+                                  }
+
+                          	// if(mysqli_query($conn,$sqljawab))
+                          	// {
+                          		echo "tambah jawaban berhasil";
+                          	 }
+                            	else
+                            	{
+                            		echo "Uploading files error";
+                            	}
+
 
   }
   else
   {
   echo "waktu habis";
   }
+
 }
 
 }

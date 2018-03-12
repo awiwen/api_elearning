@@ -44,7 +44,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
         $file = $mapel_id.date("dmY").'.'.$ext;
 
         if ($_FILES["file"]["size"] < (40000)){
-          echo "file terlalu besar maksimal 4M";
+          echo "file terlalu besar maksimal 4Mb";
           $uploadSize = 1;
         }
         else {
@@ -66,7 +66,7 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
                                 where `siswa`.kelas_id = '".$kelas_id."'
                                 ");
 
-		}
+
 
 
     	if($queryTugas = mysqli_query($conn,$sqltugas))
@@ -100,8 +100,6 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
 
         }
 
-
-
     		echo "Tambah tugas sukses";
     	}
 
@@ -109,11 +107,13 @@ if(!empty($_POST["judul"])&& !empty($_POST["konten"]) && !empty($_POST["tgl_buat
     	{
     		echo "Uploading files error";
     	}
+
     }
     else
     {
     echo "tanggal tidak sesuai";
     }
+  }
 }
 
 else
